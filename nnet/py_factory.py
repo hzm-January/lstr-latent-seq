@@ -18,7 +18,8 @@ class Network(nn.Module):
     def forward(self, iteration, save, viz_split,
                 xs, ys, ids, **kwargs):
 
-        preds, weights = self.model(ids, xs, **kwargs)  # models/py_utils/kp.py kp
+        # preds, weights = self.model(ids, xs, **kwargs)  # models/py_utils/kp.py kp
+        preds = self.model(ids, xs, **kwargs)  # models/py_utils/kp.py kp
 
         loss  = self.loss(iteration,
                           save,

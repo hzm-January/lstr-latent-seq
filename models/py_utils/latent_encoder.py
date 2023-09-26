@@ -61,7 +61,7 @@ class Latent_Embedding(nn.Module):
         self.flag = 'train' if flag else 'test'
         '''Network params'''
         n_modes = 100  # cfg.config.data.n_modes
-        embed_dim = 240  # 32  # 240 # 512  # cfg.config.data.z_dim
+        embed_dim = 32  # 32  # 240 # 512  # cfg.config.data.z_dim
         n_samples = 7000
         self.weight_embedding = nn.ModuleDict()
         # for lane_num in range(10):

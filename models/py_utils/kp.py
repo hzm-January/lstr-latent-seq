@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .position_encoding import build_position_encoding
-from .transformer import build_transformer
+from .transformer import Transformer
 from .detr_loss import SetCriterion
 from .matcher import build_matcher
 
@@ -153,14 +153,7 @@ class kp(nn.Module):
         self.query_embed = nn.Embedding(num_queries, hidden_dim)
         self.input_proj = nn.Conv2d(res_dims[-1], hidden_dim, kernel_size=1)  # the same as channel of self.layer4
 
-        self.transformer = build_transformer(hidden_dim=hidden_dim,
-                                             dropout=drop_out,
-                                             nheads=num_heads,
-                                             dim_feedforward=dim_feedforward,
-                                             enc_layers=enc_layers,
-                                             dec_layers=dec_layers,
-                                             pre_norm=pre_norm,
-                                             return_intermediate_dec=return_intermediate)
+        self.transformer = Transformer()
 
         self.class_embed    = nn.Linear(hidden_dim, num_cls)
         self.specific_embed = MLP(hidden_dim, hidden_dim, lsp_dim - 4, mlp_layers)
@@ -197,7 +190,7 @@ class kp(nn.Module):
         pmasks = F.interpolate(masks[:, 0, :, :][None], size=p.shape[-2:]).to(torch.bool)[0]  # mask(1,3,360,640) mask[:, 0, :, :](1,360,640)  mask[:, 0, :, :][None](1,1,360,640)  (1,1,12,20)[0]=(bs,12,20)
         pos    = self.position_embedding(p, pmasks)  # pmasks(bs,12,20) p(bs,128,12,20)  pos(bs,32,12,20)
         latents_embed = self.latent_emb(ids) # (bs,1,240)
-        hs, _, weights  = self.transformer(self.input_proj(p), latents_embed, pmasks, self.query_embed.weight, pos)  # hs.transpose(1, 2), memory.permute(1, 2, 0).view(bs, c, h, w), weights(7,32) pos(1,32,12,20)
+        hs  = self.transformer(latents_embed, ids)  # hs.transpose(1, 2), memory.permute(1, 2, 0).view(bs, c, h, w), weights(7,32) pos(1,32,12,20)
         output_class    = self.class_embed(hs)  # hs (2,bs,7,32) output_class  (2,bs,7,2) # models/py_utils/transformer.py forward(self, src, mask, query_embed, pos_embed)
         output_specific = self.specific_embed(hs)  # hs (2,bs,7,32) output_specific (2,bs,7,4)
         output_shared   = self.shared_embed(hs)  # output_shared (2,bs,7,4)
@@ -207,7 +200,7 @@ class kp(nn.Module):
         out = {'pred_logits': output_class[-1], 'pred_curves': output_specific[-1]}  # 只写入最后一层的输出，pred_logits[-1] (bs,7,2) pred_curves[-1] (bs,7,8)
         if self.aux_loss:  # aux_loss True
             out['aux_outputs'] = self._set_aux_loss(output_class, output_specific)
-        return out, weights  # weights(bs,240,240)
+        return out  # weights(bs,240,240)
 
     def _test(self, ids, xs, **kwargs):
         return self._train(ids, xs, **kwargs)
