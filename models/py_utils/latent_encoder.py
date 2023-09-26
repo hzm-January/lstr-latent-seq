@@ -61,12 +61,11 @@ class Latent_Embedding(nn.Module):
         self.flag = 'train' if flag else 'test'
         '''Network params'''
         n_modes = 100  # cfg.config.data.n_modes
-        embed_dim = 32  # 32  # 240 # 512  # cfg.config.data.z_dim
-        n_samples = 7000
+        embed_dim = 240  # 32  # 240 # 512  # cfg.config.data.z_dim
+        n_samples = 1
         self.weight_embedding = nn.ModuleDict()
         # for lane_num in range(10):
-        for mode in ['train', 'test']:
-            self.weight_embedding["split_" + mode] = nn.Embedding(n_samples, n_modes).requires_grad_(True)  # n_modes 100
+        self.weight_embedding = nn.Embedding(n_samples, n_modes).requires_grad_(True)  # n_modes 100
 
         init_main_modes = torch.randn(n_modes, embed_dim)  # (100,32)
         # project main modes to the surface of a hyper-sphere.
@@ -76,7 +75,7 @@ class Latent_Embedding(nn.Module):
     def forward(self, idx):
         '''Obtain latent codes for generation'''
         '''Normalize mode weights'''
-        mode_weights = self.weight_embedding["split_" + self.flag](idx.cuda())
+        mode_weights = self.weight_embedding(torch.tensor([0]*idx.shape[0]).cuda())
         mode_weights = mode_weights.softmax(dim=-1)
         # mode_weights = F.gumbel_softmax(mode_weights, dim=-1)
 

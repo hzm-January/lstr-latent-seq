@@ -19,10 +19,10 @@ class Transformer(nn.Module):
 
         '''Network'''
         # Parameters
-        self.z_dim = 32  # 512
+        self.z_dim = 240  # 512
         # self.inst_latent_len = cfg.config.data.backbone_latent_len  # 1024
         self.max_obj_num = 7  # 53
-        d_model = 32
+        d_model = 240
         n_head = 4
 
         # Build Networks
@@ -75,5 +75,5 @@ class Transformer(nn.Module):
         obj_feats = torch.cat(obj_feats[1:], dim=1)[:, :max_len]
         # box_feat = self.mlp_bbox(obj_feats)
         # completenesss_feat = self.mlp_comp(obj_feats)
-        return obj_feats.unsqueeze(0)  # (1,7,bs,32) -> (1,bs,7,32)  (1,7,512)->(1,1,7,512)
+        return obj_feats.unsqueeze(0)  # (1,7,bs,240) -> (1,bs,7,240)  (1,7,512)->(1,1,7,512)
 
