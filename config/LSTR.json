@@ -1,8 +1,8 @@
 {
     "system": {
         "dataset": "TUSIMPLE",
-        "batch_size": 16,
-        "chunk_sizes": [16],
+        "batch_size": 320,
+        "chunk_sizes": [320],
 
         "sampling_function": "kp_detection",
 
@@ -19,9 +19,9 @@
         "opt_algo": "adam",
         "prefetch_size": 5,
 
-        "max_iter": 500000,
-        "stepsize": 450000,
-        "snapshot": 5000,
+        "max_iter": 25000,
+        "stepsize": 22500,
+        "snapshot": 2000,
 
         "cache_dir": "/home/houzm/houzm/03_model/lstr-latent-seq/train/0427/cache",
         "result_dir": "/home/houzm/houzm/03_model/lstr-latent-seq/train/0427/results",
