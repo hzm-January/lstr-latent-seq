@@ -28,7 +28,7 @@ class Transformer(nn.Module):
         # Build Networks
         # empty room token in transformer encoder
         # 字典长度：房间类型数量，词向量维度：自定义512
-        self.empty_token_embedding = nn.Embedding(7000, self.z_dim)  # (7000, 32)
+        self.empty_token_embedding = nn.Embedding(9, self.z_dim)  # (7000, 32) 7000->7
 
         # Build a transformer encoder
         self.transformer_encoder = TransformerEncoderBuilder.from_kwargs(
@@ -61,18 +61,18 @@ class Transformer(nn.Module):
         #     nn.Linear(512, 128), nn.ReLU(),  # (512, 128)
         #     nn.Linear(128, 1))  # (128, 1)
 
-    def forward(self, latent_z, ids, max_len=7):
-        obj_feats = [self.empty_token_embedding(ids)[:, None]]  # [(bs,1,32)]
+    def forward(self, latent_z, ids, max_len=7): # latent_z(16,1,240)
+        obj_feats = [self.empty_token_embedding(ids)[:, None]]  # [(bs,1,240)]
 
         for idx in range(self.max_obj_num):
             X = torch.cat(obj_feats, dim=1)
             # if idx > 0:
             #     X = X.detach()
             X = self.transformer_encoder(X, length_mask=None)  # 得到Fk，作为key, value
-            last_feat = self.transformer_decoder(latent_z, X)  # latent_z (bs,1,32) 作为query
+            last_feat = self.transformer_decoder(latent_z, X)  # latent_z (bs,1,240) 作为query
             obj_feats.append(self.encoders[idx](last_feat))
 
-        obj_feats = torch.cat(obj_feats[1:], dim=1)[:, :max_len]
+        obj_feats = torch.cat(obj_feats[1:], dim=1)[:, :max_len] # obj_feats(16,7,240)
         # box_feat = self.mlp_bbox(obj_feats)
         # completenesss_feat = self.mlp_comp(obj_feats)
         return obj_feats.unsqueeze(0)  # (1,7,bs,240) -> (1,bs,7,240)  (1,7,512)->(1,1,7,512)

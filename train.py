@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "6"
 import json
 import torch
 import numpy as np
@@ -59,7 +59,7 @@ def pin_memory(data_queue, pinned_data_queue, sema):
 
         data["xs"] = [x.pin_memory() for x in data["xs"]]
         data["ys"] = [y.pin_memory() for y in data["ys"]]
-        data["ids"] = [ids_.pin_memory() for ids_ in data["ids"]]
+        data["ids"] = [ids_.pin_memory() for ids_ in data["ids"]] # TODO: ids从哪里加载的---db.tusimple.TUSIMPLE.__getitem__
 
         pinned_data_queue.put(data)
 
