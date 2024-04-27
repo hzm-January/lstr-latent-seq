@@ -195,7 +195,7 @@ class kp(nn.Module):
         # TODO: src+latents_embed
         src = self.input_proj_2(self.input_proj(p))  # 1,128,12,20 -> 1,32,12,20 -> 1,1,12,20
         src = src.flatten(2)  # 1,1,12,20 -> 1,1,240
-        src = src + latents_embed  # 1,1,240
+        src = src + latents_embed  # 1,1,240 # TODO: 测试没有latent emb的效果
         hs  = self.transformer(src, ids)  # hs.transpose(1, 2), memory.permute(1, 2, 0).view(bs, c, h, w), weights(7,32) pos(1,32,12,20)
         output_class    = self.class_embed(hs)  # hs (2,bs,7,32) output_class  (2,bs,7,2) # models/py_utils/transformer.py forward(self, src, mask, query_embed, pos_embed)
         output_specific = self.specific_embed(hs)  # hs (2,bs,7,32) output_specific (2,bs,7,4)

@@ -12,8 +12,8 @@ class Network(nn.Module):
     def __init__(self, model, loss):
         super(Network, self).__init__()
 
-        self.model = model
-        self.loss  = loss
+        self.model = model  # models/py_utils/kp.py kp
+        self.loss  = loss  # models/py_utils/kp.py AELoss
 
     def forward(self, iteration, save, viz_split,
                 xs, ys, ids, **kwargs):

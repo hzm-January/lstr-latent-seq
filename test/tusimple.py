@@ -115,7 +115,7 @@ def kp_detection(db, nnet, result_dir, debug=False, evaluator=None, repeat=1,
 
             torch.cuda.synchronize(0)  # 0 is the GPU id
             t0            = time.time()
-            outputs, weights = nnet.test(torch.tensor([[ind]]), [images, masks])
+            outputs  = nnet.test(torch.tensor([[ind]]).cuda(), [images, masks])
             torch.cuda.synchronize(0)  # 0 is the GPU id
             t             = time.time() - t0
 

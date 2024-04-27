@@ -10,7 +10,7 @@
         "val_split": "val",
         "test_split": "test",
 
-        "learning_rate": 0.001,
+        "learning_rate": 0.0001,
         "decay_rate": 10,
 
         "val_iter": 100,
@@ -19,12 +19,12 @@
         "opt_algo": "adam",
         "prefetch_size": 5,
 
-        "max_iter": 500000,
+        "max_iter": 900000,
         "stepsize": 450000,
         "snapshot": 5000,
 
-        "cache_dir": "/home/houzm/houzm/03_model/lstr-latent-seq/0926_lr_1e-3/cache",
-        "result_dir": "/home/houzm/houzm/03_model/lstr-latent-seq/0926_lr_1e-3/results",
+        "cache_dir": "/home/houzm/houzm/03_model/lstr-latent-seq/0930_lr_1e-4_weight_1/cache",
+        "result_dir": "/home/houzm/houzm/03_model/lstr-latent-seq/0930_lr_1e-4_weight_1/results",
         "data_dir": "/home/houzm/datasets/tusimple",
 
         "res_layers": [1, 2, 2, 2],
