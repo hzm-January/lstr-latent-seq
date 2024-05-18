@@ -61,8 +61,9 @@ class Transformer(nn.Module):
         #     nn.Linear(512, 128), nn.ReLU(),  # (512, 128)
         #     nn.Linear(128, 1))  # (128, 1)
 
-    def forward(self, latent_z, ids, max_len=7):
-        obj_feats = [self.empty_token_embedding(ids)[:, None]]  # [(bs,1,32)]
+    def forward(self, img_feat, latent_z, ids, max_len=7):
+        # obj_feats = [self.empty_token_embedding(ids)[:, None]]  # [(bs,1,32)]
+        obj_feats = [img_feat]  # [(bs,1,32)]
 
         for idx in range(self.max_obj_num):
             X = torch.cat(obj_feats, dim=1)

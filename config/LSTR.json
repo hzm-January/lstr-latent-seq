@@ -19,12 +19,12 @@
         "opt_algo": "adam",
         "prefetch_size": 5,
 
-        "max_iter": 900000,
+        "max_iter": 550000,
         "stepsize": 450000,
         "snapshot": 5000,
 
-        "cache_dir": "/home/houzm/houzm/03_model/lstr-latent-seq/0930_lr_1e-4_weight_1/cache",
-        "result_dir": "/home/houzm/houzm/03_model/lstr-latent-seq/0930_lr_1e-4_weight_1/results",
+        "cache_dir": "/home/houzm/houzm/03_model/lstr-latent-seq-2/train/0518_ids/cache",
+        "result_dir": "/home/houzm/houzm/03_model/lstr-latent-seq-2/train/0518_ids/results",
         "data_dir": "/home/houzm/datasets/tusimple",
 
         "res_layers": [1, 2, 2, 2],
