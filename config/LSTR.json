@@ -1,8 +1,8 @@
 {
     "system": {
         "dataset": "TUSIMPLE",
-        "batch_size": 320,
-        "chunk_sizes": [320],
+        "batch_size": 16,
+        "chunk_sizes": [16],
 
         "sampling_function": "kp_detection",
 
@@ -19,12 +19,12 @@
         "opt_algo": "adam",
         "prefetch_size": 5,
 
-        "max_iter": 25000,
-        "stepsize": 22500,
-        "snapshot": 2000,
+        "max_iter": 550000,
+        "stepsize": 450000,
+        "snapshot": 5000,
 
-        "cache_dir": "/home/houzm/houzm/03_model/lstr-latent-seq/train/0427/cache",
-        "result_dir": "/home/houzm/houzm/03_model/lstr-latent-seq/train/0427/results",
+        "cache_dir": "/home/houzm/houzm/03_model/lstr-latent-seq-2/train/0428/cache",
+        "result_dir": "/home/houzm/houzm/03_model/lstr-latent-seq-2/train/0428/results",
         "data_dir": "/home/houzm/datasets/tusimple",
 
         "res_layers": [1, 2, 2, 2],
