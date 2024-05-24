@@ -154,6 +154,9 @@ class kp(nn.Module):
         self.input_proj = nn.Conv2d(res_dims[-1], hidden_dim, kernel_size=1)  # the same as channel of self.layer4
         self.input_proj_2 = nn.Conv2d(hidden_dim, 1, kernel_size=1)  # the same as channel of self.layer4
         # self.input_proj_to_vector = nn.Conv2d(32, 1, kernel_size=3, stride=2, padding=1)
+
+        self.ids_from_img_linear = nn.Linear(12*20, 9) # maxlane =7, 没有为0，超过7为8，总共9个维度。
+
         self.transformer = Transformer()
 
         self.class_embed    = nn.Linear(240, num_cls)
@@ -178,7 +181,7 @@ class kp(nn.Module):
     def _train(self, ids, xs, **kwargs):
         images = xs[0]  # B 3 360 640
         masks  = xs[1]  # B 1 360 640
-        ids    = ids[0]
+        # ids    = ids[0]
 
         p = self.conv1(images)  # B 16 180 320  images (16,3,360,640)->(16,16,180,320)
         p = self.bn1(p)  # B 16 180 320 (16,16,180,320) -> (16,16,180,320)
@@ -188,12 +191,19 @@ class kp(nn.Module):
         p = self.layer2(p)  # B 32 45 80
         p = self.layer3(p)  # B 64 23 40
         p = self.layer4(p)  # B 128 12 20 # p.shape[-2:](12,20)
-        pmasks = F.interpolate(masks[:, 0, :, :][None], size=p.shape[-2:]).to(torch.bool)[0]  # mask(1,3,360,640) mask[:, 0, :, :](1,360,640)  mask[:, 0, :, :][None](1,1,360,640)  (1,1,12,20)[0]=(bs,12,20)
-        pos    = self.position_embedding(p, pmasks)  # pmasks(bs,12,20) p(bs,128,12,20)  pos(bs,32,12,20)
-        src = self.input_proj(p).flatten(2).permute(2, 0, 1)  # (1,32,12,20) -> (1,32,240) -> (240,bs,32)
+        # pmasks = F.interpolate(masks[:, 0, :, :][None], size=p.shape[-2:]).to(torch.bool)[0]  # mask(1,3,360,640) mask[:, 0, :, :](1,360,640)  mask[:, 0, :, :][None](1,1,360,640)  (1,1,12,20)[0]=(bs,12,20)
+        # pos    = self.position_embedding(p, pmasks)  # pmasks(bs,12,20) p(bs,128,12,20)  pos(bs,32,12,20)
+        # src = self.input_proj(p).flatten(2).permute(2, 0, 1)  # (1,32,12,20) -> (1,32,240) -> (240,bs,32)
+
+        src = self.input_proj_2(self.input_proj(p))  # 1,128,12,20 -> 1,32,12,20 -> 1,1,12,20
+        # TODO: 根据图像预测车道线条数，生成ids
+        B, C, H, W = p.shape
+        img_feats = src.flatten(1) # 1,1,12,20->(1,240)
+        ids_feats = self.ids_from_img_linear(img_feats) # (1,240)->(1,9)
+        ids = torch.argmax(ids_feats, dim=-1) # 从9个维度中选择概率最大的
         latents_embed = self.latent_emb(ids)  # (bs,1,240)
         # TODO: src+latents_embed
-        src = self.input_proj_2(self.input_proj(p))  # 1,128,12,20 -> 1,32,12,20 -> 1,1,12,20
+
         src = src.flatten(2)  # 1,1,12,20 -> 1,1,240
           # 1,1,240
         hs  = self.transformer(src, latents_embed, ids)  # hs.transpose(1, 2), memory.permute(1, 2, 0).view(bs, c, h, w), weights(7,32) pos(1,32,12,20)
